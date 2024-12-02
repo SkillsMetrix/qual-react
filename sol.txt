@@ -1,32 +1,110 @@
 
+
+
+import React, { useState } from 'react';
+
+function AddUser(props) {
+    const [uname, setUname] = useState('')
+    const [email, setUEmail] = useState('')
+
+    const addUser = (e) => {
+        e.preventDefault()
+        props.addus(uname, email)
+    }
+    return (
+        <div>
+            <form onSubmit={addUser}>
+                UserName:<input type='text' value={uname} onChange={(e) => setUname(e.target.value)} />
+                Email:<input type='text' value={email} onChange={(e) => setUEmail(e.target.value)} />
+                <button>Add User</button>
+            </form>
+        </div>
+    );
+}
+
+export default AddUser;
+
+
+----------
+ import React from 'react';
+
+function Header(props) {
+    return (
+        <div>
+             <button disabled={!props.hasData}>Delete All</button>
+        </div>
+    );
+}
+export default Header; 
+
+
+
+----------
+
+import React from 'react';
+
+function User(props) {
+    return (
+        <div>
+            {props.ud.uname}
+            <button onClick={()=> props.du(props.ud.uname)}>Delete</button>
+        </div>
+    );
+}
+
+export default User;
+
+--------
+
+
 import { log } from 'console';
 import React, { useEffect, useState } from 'react';
+import AddUser from './AddUser';
+import Users from './Users';
+import Header from './Header';
 
 
 function UserApp() {
-    const [uname,setUname]= useState('')
-    const [users,setUsers]= useState([])
 
-    const addUser=(e)=>{
-        e.preventDefault()
-       setUsers([...users,{uname}])
-       setUname('')
+    const [users, setUsers] = useState([])
+
+    const deleteUser = (usr) => {
+        setUsers(users.filter((user) => user.uname !== usr))
     }
-   
+    const addUserToArray = (uname, email) => {
+
+        setUsers([...users, { uname, email }])
+
+    }
+
     return (
         <div>
-            {
-                users.map((user)=>(
-                    <div key={user}>{user.uname}</div>
-                ))
-            }
-            <form onSubmit={addUser}>
-                UserName:<input type='text' value={uname} onChange={(e)=> setUname(e.target.value)}/>
-                <button>Add User</button>
-            </form>
-            
+            <Header hasData={users.length > 0} />
+            <AddUser addus={addUserToArray} />
+            <hr />
+            <Users du={deleteUser} data={users} />
+
+
         </div>
     );
 }
 
 export default UserApp;
+
+
+-----------
+import React from 'react';
+import User from './User';
+
+function Users(props) {
+
+    return (
+        <div>
+            {
+                props.data.map((user) => (<User ud={user} du={props.du} />))
+            }
+        </div>
+    )
+}
+
+export default Users;
