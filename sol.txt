@@ -1,9 +1,70 @@
 
 
 
+import { log } from 'console';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'
+function Login(props) {
+    const navigate = useNavigate()
+    const [formData, setFormData] = useState<any>({})
 
+    const handleData = (e) => {
+        setFormData({
+            ...formData, [e.target.name]: e.target.value
+
+        })
+    }
+    const login = (e) => {
+        e.preventDefault()
+        let details = JSON.parse(localStorage.getItem('qual'))
+        console.log(details);
+        if (details.uname == formData.uname && details.password == formData.password) {
+            navigate('/userdetails')
+        }
+
+
+
+    }
+    return (
+
+
+
+        <div className='container'>
+            <div className="card">
+                <div className="card-header">
+                    User Registration Form
+                </div>
+                <div className="card-body">
+                    <div>
+                        <form onSubmit={login}>
+                            UserName:<input type='text' name='uname' onChange={handleData} />
+                            Password:<input type='password' name='password' onChange={handleData} /> &nbsp;
+
+                            <button className='btn btn-success'>Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+    );
+}
+
+export default Login;
+----------
+
+
+
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 function Register(props) {
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({})
 
     const handleData = (e) => {
@@ -16,6 +77,7 @@ function Register(props) {
         e.preventDefault()
         const data = JSON.stringify(formData)
         localStorage.setItem('qual', data)
+        navigate('/login')
 
     }
     return (
@@ -50,3 +112,49 @@ function Register(props) {
 }
 
 export default Register;
+
+------------
+
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+function Portfolio(props) {
+    const [user,setUser]=useState<any>({})
+    const navigate=useNavigate();
+
+    useEffect(()=>{
+        const localUser= JSON.parse(localStorage.getItem('qual'))
+        if(localUser && localUser.uname ==='admin1'){
+            setUser(localUser)
+        }else{
+            navigate('/login')
+        }
+    },[])
+    return (
+        <div>
+           User Details <br/>
+           UserName : {user.uname} 
+        </div>
+    );
+}
+
+export default Portfolio;
+
+--------
+
+import Login from "./components/Login";
+import NotFound from "./components/NotFound";
+import Portfolio from "./components/Portfolio";
+import Register from "./components/Register";
+import UserDetails from "./components/UserDetails";
+
+ 
+
+export const routes=[
+    {path:'/',element:<Login/>},
+    {path:'/login',element:<Login/>},
+    {path:'register',element:<Register/>},
+    {path:'userdetails',element:<UserDetails/>},
+    {path:'portfolio',element:<Portfolio/>},
+    {path:'*',element:<NotFound/>}
+]
