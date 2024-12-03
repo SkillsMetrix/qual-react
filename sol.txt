@@ -46,29 +46,36 @@ const App = () => {
                                         )
                                     }
                                     <TextField fullWidth
-                                    label="Password"
-                                    type='password'
-                                    placeholder='Password'
-                                    {
+                                        label="Password"
+                                        type="password"
+                                        placeholder='Password'
+                                        {
                                         ...register("password", {
-                                            required: 'Password is required',
-                                            minLength:{
-                                                value:10,
-                                                message:"Password should be atleast 10 char"
+                                            required: "Password is required",
+                                            minLength: {
+                                                value: 10,
+                                                message: "Password Should be atlease 10 char"
                                             }
                                         })
+                                        }
+                                        style={{ marginTop: '20px' }} />
+                                    {
+                                        errors.password && (
+                                            <p className='error-msg'>{errors.password.message}</p>
+                                        )
                                     }
-                                    style={{marginTop:'20px'}}
-                                        />
-                                        <Button style={{marginTop:'20'px}} type='submit' fullWidth>Submit</Button>
+                                    <Button style={{ marginTop: '20px' }} type="submit" fullWidth variant="contained">Submit</Button>
 
-                                        </Box>
-                                        </form>
-                                        </Grid>
-                                        </Grid>
-                                        </div>
-                                        </Container>
-                                        </div>
+                                </Box>
+
+                            </form>
+                        </Grid>
+
+                    </Grid>
+                </div>
+            </Container>
+        </div>
     )
+
 }
-export default App
+export default App;
