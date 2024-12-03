@@ -1,81 +1,93 @@
-import { useState } from 'react';
-import { Container, Grid, Button, TextField, Box } from "@mui/material";
-import { useForm, SubmitHandler } from 'react-hook-form';
-import './App.css';
+import React from "react";
+import { render, fireEvent, waitForElement } from "@testing-library/react";
 
-type FormValue = {
-    email: string,
-    password: string
+import LoginForm, { Props } from "../LoginForm";
+
+function renderLoginForm(props: Partial<Props> = {}) {
+  const defaultProps: Props = {
+    onPasswordChange() {
+      return;
+    },
+    onRememberChange() {
+      return;
+    },
+    onUsernameChange() {
+      return;
+    },
+    onSubmit() {
+      return;
+    },
+    shouldRemember: true
+  };
+  return render(<LoginForm {...defaultProps} {...props} />);
 }
 
-const App = () => {
-    const { register, handleSubmit, formState: { errors }, } = useForm<FormValue>()
-    const [data, setData] = useState({ email: '', password: '' })
-    const onSubmit: SubmitHandler<FormValue> = (data) => {
-        console.log("final data", data)
-        alert(data.email)
-    }
-    return (
-        <div className="bg-color">
-            <Container fixed>
-                <div className="form-wrapper">
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={12} lg={12} md={12}>
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                <Box component="span" sx={{ p: 2, color: '#1d395d', textAlign: 'left' }}>
-                                    <h1>Login</h1>
-                                </Box>
-                                <Box>
-                                    <TextField fullWidth
-                                        label="Email"
-                                        placeholder="Enter Email"
-                                        {
-                                        ...register("email", {
-                                            required: "Email is required",
-                                            pattern: {
-                                                value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                                                message: "Invalid Email"
-                                            }
+describe("<LoginForm />", () => {
+  test("should display a blank login form, with remember me checked by default", async () => {
+    const { findByTestId } = renderLoginForm();
 
-                                        })
-                                        }
-                                    />
-                                    {
-                                        errors.email && (
-                                            <p className='error-msg'>{errors.email.message}</p>
-                                        )
-                                    }
-                                    <TextField fullWidth
-                                        label="Password"
-                                        type="password"
-                                        placeholder='Password'
-                                        {
-                                        ...register("password", {
-                                            required: "Password is required",
-                                            minLength: {
-                                                value: 10,
-                                                message: "Password Should be atlease 10 char"
-                                            }
-                                        })
-                                        }
-                                        style={{ marginTop: '20px' }} />
-                                    {
-                                        errors.password && (
-                                            <p className='error-msg'>{errors.password.message}</p>
-                                        )
-                                    }
-                                    <Button style={{ marginTop: '20px' }} type="submit" fullWidth variant="contained">Submit</Button>
+    const loginForm = await findByTestId("login-form");
 
-                                </Box>
+    expect(loginForm).toHaveFormValues({
+      username: "",
+      password: "",
+      remember: true
+    });
+  });
 
-                            </form>
-                        </Grid>
+  test("should allow entering a username", async () => {
+    const onUsernameChange = jest.fn();
+    const { findByTestId, debug } = renderLoginForm({ onUsernameChange });
+    const username = await findByTestId("username");
 
-                    </Grid>
-                </div>
-            </Container>
-        </div>
-    )
+    fireEvent.change(username, { target: { value: "test" } });
 
-}
-export default App;
+    expect(onUsernameChange).toHaveBeenCalledWith("test");
+  });
+
+  test("should allow entering a password", async () => {
+    const onPasswordChange = jest.fn();
+    const { findByTestId } = renderLoginForm({ onPasswordChange });
+    const username = await findByTestId("password");
+
+    fireEvent.change(username, { target: { value: "password" } });
+
+    expect(onPasswordChange).toHaveBeenCalledWith("password");
+  });
+
+  test("should allow toggling remember me", async () => {
+    const onRememberChange = jest.fn();
+    const { findByTestId } = renderLoginForm({
+      onRememberChange,
+      shouldRemember: false
+    });
+    const remember = await findByTestId("remember");
+
+    fireEvent.click(remember);
+
+    expect(onRememberChange).toHaveBeenCalledWith(true);
+
+    fireEvent.click(remember);
+
+    expect(onRememberChange).toHaveBeenCalledWith(false);
+  });
+
+  test("should submit the form with username, password, and remember", async () => {
+    const onSubmit = jest.fn();
+    const { findByTestId } = renderLoginForm({
+      onSubmit,
+      shouldRemember: false
+    });
+    const username = await findByTestId("username");
+    const password = await findByTestId("password");
+    const remember = await findByTestId("remember");
+    const submit = await findByTestId("submit");
+
+    fireEvent.change(username, { target: { value: "test" } });
+    fireEvent.change(password, { target: { value: "password" } });
+    fireEvent.click(remember);
+    fireEvent.click(submit);
+
+    expect(onSubmit).toHaveBeenCalledWith("test", "password", true);
+  });
+});
