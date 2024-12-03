@@ -1,160 +1,48 @@
 
-
-
-import { log } from 'console';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
-function Login(props) {
-    const navigate = useNavigate()
-    const [formData, setFormData] = useState<any>({})
-
-    const handleData = (e) => {
-        setFormData({
-            ...formData, [e.target.name]: e.target.value
-
-        })
-    }
-    const login = (e) => {
-        e.preventDefault()
-        let details = JSON.parse(localStorage.getItem('qual'))
-        console.log(details);
-        if (details.uname == formData.uname && details.password == formData.password) {
-            navigate('/userdetails')
-        }
-
-
-
-    }
-    return (
-
-
-
-        <div className='container'>
-            <div className="card">
-                <div className="card-header">
-                    User Registration Form
-                </div>
-                <div className="card-body">
-                    <div>
-                        <form onSubmit={login}>
-                            UserName:<input type='text' name='uname' onChange={handleData} />
-                            Password:<input type='password' name='password' onChange={handleData} /> &nbsp;
-
-                            <button className='btn btn-success'>Login</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-
-
-
-    );
+const counterReducer=(state=20)=>{
+    return state
 }
+export default counterReducer
 
-export default Login;
+
+-----------
+
+
+
+import { combineReducers } from 'redux'
+import counterReducer from './counterReducer'
+const rootReducer= combineReducers({
+    appCount:counterReducer
+})
+
+export default rootReducer
+
 ----------
 
+import { createStore } from "redux";
+import rootReducer from "./reducers";
 
 
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
-function Register(props) {
-    const navigate = useNavigate()
-    const [formData, setFormData] = useState({})
+export const store= createStore(rootReducer)
 
-    const handleData = (e) => {
-        setFormData({
-            ...formData, [e.target.name]: e.target.value
+-------
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 
-        })
-    }
-    const addUser = (e) => {
-        e.preventDefault()
-        const data = JSON.stringify(formData)
-        localStorage.setItem('qual', data)
-        navigate('/login')
-
-    }
-    return (
-
-
-
-        <div className='container'>
-            <div className="card">
-                <div className="card-header">
-                    User Registration Form
-                </div>
-                <div className="card-body">
-                    <div>
-                        <form onSubmit={addUser}>
-                            UserName:<input type='text' name='uname' onChange={handleData} />
-                            Email:<input type='text' name='email' onChange={handleData} />
-                            Password:<input type='password' name='password' onChange={handleData} /> &nbsp;
-
-                            <button className='btn btn-success'>Register User</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-
-
-
-    );
-}
-
-export default Register;
-
-------------
-
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-function Portfolio(props) {
-    const [user,setUser]=useState<any>({})
-    const navigate=useNavigate();
-
-    useEffect(()=>{
-        const localUser= JSON.parse(localStorage.getItem('qual'))
-        if(localUser && localUser.uname ==='admin1'){
-            setUser(localUser)
-        }else{
-            navigate('/login')
-        }
-    },[])
-    return (
-        <div>
-           User Details <br/>
-           UserName : {user.uname} 
-        </div>
-    );
-}
-
-export default Portfolio;
-
---------
-
-import Login from "./components/Login";
-import NotFound from "./components/NotFound";
-import Portfolio from "./components/Portfolio";
-import Register from "./components/Register";
-import UserDetails from "./components/UserDetails";
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
+root.render(
+  <Provider store={store}>
+    <App />
+    </Provider>
+);
 
  
-
-export const routes=[
-    {path:'/',element:<Login/>},
-    {path:'/login',element:<Login/>},
-    {path:'register',element:<Register/>},
-    {path:'userdetails',element:<UserDetails/>},
-    {path:'portfolio',element:<Portfolio/>},
-    {path:'*',element:<NotFound/>}
-]
+reportWebVitals();
