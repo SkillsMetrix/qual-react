@@ -12,20 +12,40 @@ function Register(props) {
 
         })
     }
- const addUser = (e) => {
+    const addUser = (e) => {
         e.preventDefault()
         const data = JSON.stringify(formData)
         localStorage.setItem('qual', data)
 
     }
     return (
-        <div>
-            <form onSubmit={addUser}>
-                UserName:<input type='text' name='uname' onChange={handleData} />
-                Email:<input type='text' name='email' onChange={handleData} />
-                <button>Add User</button>
-            </form>
+
+
+
+        <div className='container'>
+            <div className="card">
+                <div className="card-header">
+                    User Registration Form
+                </div>
+                <div className="card-body">
+                    <div>
+                        <form onSubmit={addUser}>
+                            UserName:<input type='text' name='uname' onChange={handleData} />
+                            Email:<input type='text' name='email' onChange={handleData} />
+                            Password:<input type='password' name='password' onChange={handleData} /> &nbsp;
+
+                            <button className='btn btn-success'>Register User</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+
+
+
+
+
+
     );
 }
 
