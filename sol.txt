@@ -1,51 +1,47 @@
-import React, { useState } from 'react';
-import { Box, Container, Grid, TextField } from '@mui/material'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import './App.css'
- 
-type FormValue={
-    email:string,
-    password:string
+import { useState } from 'react';
+import { Container, Grid, Button, TextField, Box } from "@mui/material";
+import { useForm, SubmitHandler } from 'react-hook-form';
+import './App.css';
+
+type FormValue = {
+    email: string,
+    password: string
 }
-function App() {
-    const {register,handleSubmit,formState:{errors},}}=useForm<FormValue>()
-    const [data,setData]= useState({email:'',password:''})
 
-    const onSubmit:SubmitHandler<FormValue>=(data)=>{
-        console.log('final Data ',data);
+const App = () => {
+    const { register, handleSubmit, formState: { errors }, } = useForm<FormValue>()
+    const [data, setData] = useState({ email: '', password: '' })
+    const onSubmit: SubmitHandler<FormValue> = (data) => {
+        console.log("final data", data)
         alert(data.email)
-        }
-
+    }
     return (
-        <div>
-           <div className='bg-color'>
+        <div className="bg-color">
             <Container fixed>
-                <div className='form-wrapper'>
+                <div className="form-wrapper">
                     <Grid container spacing={2}>
-                        <Grid item xs={12} lg={12} md={12}>
+                        <Grid item xs={12} sm={12} lg={12} md={12}>
                             <form onSubmit={handleSubmit(onSubmit)}>
-                                <Box component="span" sx={{p:2,color:'blue' ,textAlign:'center'}}>
+                                <Box component="span" sx={{ p: 2, color: '#1d395d', textAlign: 'left' }}>
                                     <h1>Login</h1>
                                 </Box>
                                 <Box>
-                                    <TextField fullWidth label="Email"
-                                    placeholder='Enter Email' {
-                                        ...register("email",{
-                                            required: 'Email is required',
-                                            message:"invalid Email" 
+                                    <TextField fullWidth
+                                        label="Email"
+                                        placeholder="Enter Email"
+                                        {
+                                        ...register("email", {
+                                            required: "Email is required",
+                                            pattern: {
+                                                value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                                                message: "Invalid Email"
+                                            }
+
                                         })
-                                    }
+                                        }
                                     />
-                                </Box>
-
-                            </form>
-                        </Grid>
-                    </Grid>
-                </div>
-            </Container>
-           </div>
-        </div>
-    );
-}
-
-export default App;
+                                    {
+                                        errors.email && (
+                                            <p className='error-msg'>{errors.email.message}</p>
+                                        )
+                                    }
